@@ -52,3 +52,27 @@ if cursor.fetchone()[0] == 0:
         cursor.execute("INSERT INTO Books (title, author) VALUES (?, ?)", (b.title, b.author))
     conn.commit()
     print("5 böcker har lagts till i databasen!")
+
+
+    def register_user():
+    print("\n--- Registrera ny användare ---")
+    first_name = input("Förnamn: ")
+    last_name = input("Efternamn: ")
+    birth_date = input("Födelsedatum (ÅÅÅÅ-MM-DD): ")
+    
+    birth_year = int(birth_date.split("-")[0])
+    current_year = 2026
+    age = current_year - birth_year
+    
+    clean_date = birth_date.replace("-", "")[2:]
+    p_number = f"{clean_date}-1234"
+    
+    cursor.execute('''
+        INSERT INTO Users (first_name, last_name, birth_date, p_number, age)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (first_name, last_name, birth_date, p_number, age))
+    conn.commit()
+    
+    print(f"Användare registrerad! Ålder: {age}, Personnummer: {p_number}")
+    return cursor.lastrowid
+
