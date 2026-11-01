@@ -55,26 +55,26 @@ if cursor.fetchone()[0] == 0:
 
 
     def register_user():
-    print("\n--- Registrera ny användare ---")
-    first_name = input("Förnamn: ")
-    last_name = input("Efternamn: ")
-    birth_date = input("Födelsedatum (ÅÅÅÅ-MM-DD): ")
+        print("\n--- Registrera ny användare ---")
+        first_name = input("Förnamn: ")
+        last_name = input("Efternamn: ")
+        birth_date = input("Födelsedatum (ÅÅÅÅ-MM-DD): ")
     
-    birth_year = int(birth_date.split("-")[0])
-    current_year = 2026
-    age = current_year - birth_year
+        birth_year = int(birth_date.split("-")[0])
+        current_year = 2026
+        age = current_year - birth_year
     
-    clean_date = birth_date.replace("-", "")[2:]
-    p_number = f"{clean_date}-1234"
+        clean_date = birth_date.replace("-", "")[2:]
+        p_number = f"{clean_date}-1234"
     
-    cursor.execute('''
+        cursor.execute('''
         INSERT INTO Users (first_name, last_name, birth_date, p_number, age)
         VALUES (?, ?, ?, ?, ?)
-    ''', (first_name, last_name, birth_date, p_number, age))
-    conn.commit()
+        ''', (first_name, last_name, birth_date, p_number, age))
+        conn.commit()
     
-    print(f"Användare registrerad! Ålder: {age}, Personnummer: {p_number}")
-    return cursor.lastrowid
+        print(f"Användare registrerad! Ålder: {age}, Personnummer: {p_number}")
+        return cursor.lastrowid
 
 def loan_book(user_id):
     cursor.execute("SELECT id, title, author FROM Books")
@@ -87,7 +87,7 @@ def loan_book(user_id):
     
     cursor.execute("INSERT INTO Loans (user_id, book_id) VALUES (?, ?)", (user_id, book_id))
     conn.commit()
-    print("Boken har lånats!")
+    print("Boken har nu lånats!")
 
 def show_user_page(user_id):
     print("\n--- DIN SIDA (Lånade böcker) ---")
@@ -122,8 +122,8 @@ def main():
     while True:
         print("\nMENY:")
         print("1. Låna en bok")
-        print("2. Visa Mina Lån (Användarens sida)")
-        print("3. Visa Alla Lån (Bibliotekets sida)")
+        print("2. Visa Mina Lån (Användarens lånade böcker)")
+        print("3. Visa Alla Lån (Bibliotekets alla utlånade böcker)")
         print("4. Avsluta")
         
         val = input("Välj (1-4): ")
