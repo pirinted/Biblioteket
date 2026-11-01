@@ -76,3 +76,69 @@ if cursor.fetchone()[0] == 0:
     print(f"Användare registrerad! Ålder: {age}, Personnummer: {p_number}")
     return cursor.lastrowid
 
+def loan_book(user_id):
+    cursor.execute("SELECT id, title, author FROM Books")
+    books = cursor.fetchall()
+    print("\nTILLGÄNGLIGA BÖCKER:")
+    for b in books:
+        print(f"[{b[0]}] {b[1]} av {b[2]}")
+        
+    book_id = int(input("Ange ID på boken du vill låna: "))
+    
+    cursor.execute("INSERT INTO Loans (user_id, book_id) VALUES (?, ?)", (user_id, book_id))
+    conn.commit()
+    print("Boken har lånats!")
+
+def show_user_page(user_id):
+    print("\n--- DIN SIDA (Lånade böcker) ---")
+    cursor.execute('''
+        SELECT Books.title, Books.author FROM Loans
+        JOIN Books ON Loans.book_id = Books.id
+        WHERE Loans.user_id = ?
+    ''', (user_id,))
+    loans = cursor.fetchall()
+    if not loans:
+        print("Du har inte lånat några böcker än.")
+    for l in loans:
+        print(f"- {l[0]} ({l[1]})")
+
+def show_admin_page():
+    print("\n--- BIBLIOTEKETS SIDA (Alla utlånade böcker) ---")
+    cursor.execute('''
+        SELECT Books.title, Users.first_name, Users.last_name FROM Loans
+        JOIN Books ON Loans.book_id = Books.id
+        JOIN Users ON Loans.user_id = Users.id
+    ''')
+    all_loans = cursor.fetchall()
+    if not all_loans:
+        print("Inga böcker är utlånade just nu.")
+    for al in all_loans:
+        print(f"Bok: '{al[0]}' är lånad av: {al[1]} {al[2]}")
+
+def main():
+    print("Välkommen till Biblioteket!")
+    user_id = register_user()
+    
+    while True:
+        print("\nMENY:")
+        print("1. Låna en bok")
+        print("2. Visa Mina Lån (Användarens sida)")
+        print("3. Visa Alla Lån (Bibliotekets sida)")
+        print("4. Avsluta")
+        
+        val = input("Välj (1-4): ")
+        if val == "1":
+            loan_book(user_id)
+        elif val == "2":
+            show_user_page(user_id)
+        elif val == "3":
+            show_admin_page()
+        elif val == "4":
+            break
+
+    conn.close()
+
+if __name__ == '__main__':
+    main()
+
+
